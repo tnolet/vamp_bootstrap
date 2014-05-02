@@ -1,8 +1,19 @@
-/* Bootstrap configures Hazelcast for clustering in Docker
+/*
+   Bootstrap configures Hazelcast for clustering in Docker
    It performs two tasks:
+
    1) Setup Hazelcast for routing between Docker instances on different hosts
    2) Setup the Vertx event bus for routing between verticles running in these Docker instances
+
+   This code is based almost entirely on the standard Vertx Starter class and the extra commit remarks regarding
+   the programmatic configuration of the event bus, please see:
+
+   https://github.com/eclipse/vert.x/blob/master/vertx-platform/src/main/java/org/vertx/java/platform/impl/cli/Starter.java
+   https://github.com/eclipse/vert.x/pull/777
 */
+
+package io.magnetic.vamp;
+
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
@@ -101,13 +112,13 @@ public class Bootstrap {
         JsonObject conf = new JsonObject();
 
 //        Set the initializing verticle. This is the verticle that will spin up all other verticles
-        URL file_location = null;
+        URL classpath_location = null;
         try {
-            file_location = new URL("file:///" + vertxClassPath);
+            classpath_location = new URL("file:///" + vertxClassPath);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        URL[] classpath = new URL[]{file_location};
+        URL[] classpath = new URL[]{classpath_location};
 
         pm.deployVerticle(vertxVerticle, conf, classpath, 1, null, new AsyncResultHandler<String>() {
             public void handle(AsyncResult<String> asyncResult) {
