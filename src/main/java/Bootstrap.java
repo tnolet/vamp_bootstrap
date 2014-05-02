@@ -44,7 +44,6 @@ public class Bootstrap {
                 if (sargs.length < 2) {
                     displaySyntax();
                 } else {
-                    String operand = sargs[1];
                     switch (command) {
                         case "run":
                            runVertx(args);
@@ -59,17 +58,15 @@ public class Bootstrap {
 
     private void runVertx(Args args) {
 
-        String sinstances = args.map.get("-instances");
-
-
         // Hazelcast properties
-
         String hazelcastPublicAddress = args.map.get("-public_address");
-        String hazelcastLocalAddress = args.map.get("-local_address");
+       // String hazelcastLocalAddress = args.map.get("-local_address");
         String hazelcastRemoteAddress = args.map.get("-remote_address");
         int hazelcastPort = Integer.parseInt(args.map.get("-cluster_port"));
 
         // Vertx properties
+        String vertxVerticle = args.map.get("-verticle"); //name of file
+        String vertxClassPath = args.map.get("-classpath"); //directory
 
         String vertxPublicHost = args.map.get("-public_address");
         Integer vertxPublicPort = Integer.parseInt(args.map.get("-event_bus_port"));
@@ -101,21 +98,18 @@ public class Bootstrap {
         PlatformManager pm = PlatformLocator.factory.createPlatformManager(vertxClusterPort, vertxClusterHost);
 
 //        Set up the configuration object
-
         JsonObject conf = new JsonObject();
 
 //        Set the initializing verticle. This is the verticle that will spin up all other verticles
-
-        String verticle = "/vamp/lib/vamp2.rb";
         URL file_location = null;
         try {
-            file_location = new URL("file:///vamp/");
+            file_location = new URL("file:///" + vertxClassPath);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         URL[] classpath = new URL[]{file_location};
 
-        pm.deployVerticle(verticle, conf, classpath, 1, null, new AsyncResultHandler<String>() {
+        pm.deployVerticle(vertxVerticle, conf, classpath, 1, null, new AsyncResultHandler<String>() {
             public void handle(AsyncResult<String> asyncResult) {
                 if (asyncResult.succeeded()) {
                     System.out.println("Deployment ID is " + asyncResult.result());
@@ -141,7 +135,7 @@ public class Bootstrap {
 
         String usage =
 
-                "    vamp run [-options]                                                                \n" +
+                "vamp run [-options]                                                                   \n" +
                         "        run a bootstrapper that configures and connects up Hazelcast           \n" +
                         "        and the Vertx event bus for usage in Docker containers.                \n" +
                         "    required options are:\n" +
@@ -158,6 +152,10 @@ public class Bootstrap {
                         "        -cluster_port          specifies the port for the hazelcast cluster    \n" +
                         "                                                                               \n" +
                         "        -event_bus_port        specifies the port for the event bus            \n" +
+                        "                                                                               \n" +
+                        "        -verticle              specifies the verticle to run                   \n" +
+                        "                                                                               \n" +
+                        "        -classpath             specifies the classpath                         \n" +
                         "                                                                               \n" +
                         "                                                                               \n";
 
