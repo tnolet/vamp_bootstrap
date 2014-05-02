@@ -1,0 +1,17 @@
+.idea/
+.DS_Store
+.gradle
+mods/
+.classpath
+.project
+.settings
+.yardoc
+.yardopts
+bin
+build
+target
+out
+*.iml
+*.ipr
+*.iws
+*.class
