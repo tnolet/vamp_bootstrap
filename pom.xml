@@ -59,7 +59,7 @@
                                     <type>tar.gz</type>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${project.build.directory}install/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/install/</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
