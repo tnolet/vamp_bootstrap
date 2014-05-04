@@ -189,8 +189,8 @@ REMOTE_HOST_ADDRESS=`curl -L http://$DOCKER0_ADDRESS:4001/v2/keys/hosts | \
 LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
 EVENT_BUS_PORT=5702
-VERTICLE="vamp/lib/vamp.rb"
-VERTICLE_CLASSPATH="vamp/"
+VERTICLE="io.magnetic~vamp-0.1.0/lib/vamp.rb"
+VERTICLE_CLASSPATH="/io.magnetic~vamp-0.1.0/"
 
 
 exec "$JAVACMD" \
