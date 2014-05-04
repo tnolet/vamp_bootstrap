@@ -50,7 +50,7 @@ public class Bootstrap {
         } else {
             String command = sargs[0].toLowerCase();
             if ("version".equals(command)) {
-                log.info("Boostrap Vamp 0.1");
+                log.info("Vamp Bootstrap 0.1");
             } else {
                 if (sargs.length < 2) {
                     displaySyntax();
@@ -145,11 +145,16 @@ public class Bootstrap {
     private static void displaySyntax() {
 
         String usage =
-
-                "vamp run [-options]                                                                   \n" +
+                "                                      \n"+
+                " | |  / /___ _____ ___  ____          \n"+
+                " | | / / __ `/ __ `__ \\/ __ \\       \n"+
+                " | |/ / /_/ / / / / / / /_/ /         \n"+
+                " |___/\\__,_/_/ /_/ /_/ .___/         \n"+
+                "                    /_/               \n"+
+                " vamp run [-options]                                                                        \n" +
                         "        run a bootstrapper that configures and connects up Hazelcast           \n" +
                         "        and the Vertx event bus for usage in Docker containers.                \n" +
-                        "    required options are:\n" +
+                        "        required options are:                                                  \n" +
                         "        -public_address        specifies the public address of the host on     \n" +
                         "                               which Docker is running. This is the address    \n" +
                         "                               other hosts will connect to.                    \n" +
