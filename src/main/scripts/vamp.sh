@@ -56,27 +56,26 @@ if $cygwin ; then
     [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
 
-# Attempt to set VERTX_HOME
-# Resolve links: $0 may be a link
-#PRG="$0"
-## Need this for relative symlinks.
-#while [ -h "$PRG" ] ; do
-#    ls=`ls -ld "$PRG"`
-#    link=`expr "$ls" : '.*-> \(.*\)$'`
-#    if expr "$link" : '/.*' > /dev/null; then
-#        PRG="$link"
-#    else
-#        PRG=`dirname "$PRG"`"/$link"
-#    fi
-#done
-#SAVED="`pwd`"
-#cd "`dirname \"$PRG\"`/.."
-#VERTX_HOME="`pwd -P`"
-#cd "$SAVED"
+Attempt to set VAMP_HOME
+Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/.."
+VAMP_HOME="`pwd -P`"
+cd "$SAVED"
 
 VERTX_HOME="/etc/vertx/"
-VAMP_HOME="/io/magnetic/vamp"
-CLASSPATH=${CLASSPATH}:${VERTX_HOME}/conf:${VERTX_HOME}/lib/*:${VAMP_HOME}/*
+CLASSPATH=${CLASSPATH}:${VERTX_HOME}/conf:${VERTX_HOME}/lib/*:${VAMP_HOME}/lib/*
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
