@@ -4,7 +4,7 @@ jdk:
 branches:
   only:
     - master
-script: mvn deploy
+script: mvn package
 deploy:
   provider: s3
   access_key_id: AKIAJONSK6SH5DZ5R7LA
