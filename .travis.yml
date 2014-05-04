@@ -13,6 +13,7 @@ deploy:
   bucket: deploy.magnetic.io
   upload-dir: snapshot
   region: eu-west-1
+  endpoint: s3-eu-west-1.amazonaws.com
   skip_cleanup: true
   on:
     repo: tnolet/vamp_bootstrap
