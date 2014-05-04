@@ -3,17 +3,17 @@ jdk:
 - openjdk7
 branches:
   only:
-    - master
+  - master
 script: mvn package
 deploy:
   provider: s3
   access_key_id: AKIAJONSK6SH5DZ5R7LA
   secret_access_key:
-    secure: gWbvdJqCLGqU3OxN8EAE2ahasWSWwZ755EbnMtjh3sFjvjYwTc+5v9ih4gOc8eCzVAwCFUBbV5BbLwB98Z4rmXv+FJwddbQ1WccLMAflJYLzZabeBlovdafNwYVkZd2Cig/ZsA22XcnvyPS0ajcBL8lweiu4c4ARk4AUQNSR1v0=
-  bucket: "deploy.magnetic.io"
+      secure: PtmA7NlbDmzi5M4BcmNKrUqxAyHhzaztloLvdiXbJkPqbv37v4/fslG9aO87iDws+cRS2IeVANDIkvjOsRgByW8PlCvLQUzTABo+H0w13PwT3vOJhefQMIpEj15X98ffnkuu4YtTwa8Oca/UZPpxmiWe3MPhQSS34VYWdf5Pelw=
+  bucket: deploy.magnetic.io
   upload-dir: snapshot
-  region: "eu-west-1"
-  endpoint: "s3-eu-west-1.amazonaws.com"
+  region: eu-west-1
+  endpoint: s3-eu-west-1.amazonaws.com
   skip_cleanup: true
   on:
     repo: tnolet/vamp_bootstrap
