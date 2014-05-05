@@ -160,7 +160,7 @@ public class Bootstrap {
                         "                               other hosts will connect to.                    \n" +
                         "                                                                               \n" +
                         "        -local_address         specifies the local address inside the Docker   \n" +
-                        "                               container, i.e. eth0.                           \n" +
+                        "                               container, i.e. the address of eth0             \n" +
                         "                                                                               \n" +
                         "        -remote_address        specifies the public address of the remote      \n" +
                         "                               host we are trying to connect to.               \n" +
