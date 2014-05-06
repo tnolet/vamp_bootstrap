@@ -184,6 +184,7 @@ public class Bootstrap {
                         "                                                                               \n" +
                         "        -vertx_module          specifies the vertx module to run. This will    \n" +
                         "                               typically be a module that deploys other modules\n" +
+                        "                                                                               \n" +
                         "                                                                               \n";
 
         log.info(usage);

@@ -206,7 +206,7 @@ REMOTE_HOST_ADDRESS=`curl -L http://$DOCKER0_ADDRESS:4001/v2/keys/hosts | \
 LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
 EVENT_BUS_PORT=5702
-VERTX_MODULE="controller"
+VERTX_MODULE="pulse"
 
 exec "$JAVACMD" \
     "${JVM_OPTS[@]}" \
@@ -218,5 +218,5 @@ exec "$JAVACMD" \
                                    -local_address ${LOCAL_ADDRESS} \
                                    -cluster_port ${CLUSTER_PORT} \
                                    -event_bus_port ${EVENT_BUS_PORT} \
-                                   -vertx_module ${VERTICLE_MODULE} \
+                                   -vertx_module ${VERTX_MODULE} \
                                     "$@"
