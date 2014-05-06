@@ -56,8 +56,8 @@ if $cygwin ; then
     [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
 
-Attempt to set VAMP_HOME
-Resolve links: $0 may be a link
+#Attempt to set VAMP_HOME
+#Resolve links: $0 may be a link
 PRG="$0"
 # Need this for relative symlinks.
 while [ -h "$PRG" ] ; do
@@ -74,8 +74,25 @@ cd "`dirname \"$PRG\"`/.."
 VAMP_HOME="`pwd -P`"
 cd "$SAVED"
 
-VERTX_HOME="/etc/vertx/"
-CLASSPATH=${CLASSPATH}:${VERTX_HOME}/conf:${VERTX_HOME}/lib/*:${VAMP_HOME}/lib/*
+#Attempt to set VERTX_HOME
+#Resolve links: $0 may be a link
+PRG="/usr/bin/vertx"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/.."
+VERTX_HOME="`pwd -P`"
+cd "$SAVED"
+
+CLASSPATH=${VERTX_HOME}/conf:${VERTX_HOME}/lib/*:${VAMP_HOME}/lib/*
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -189,11 +206,11 @@ REMOTE_HOST_ADDRESS=`curl -L http://$DOCKER0_ADDRESS:4001/v2/keys/hosts | \
 LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
 EVENT_BUS_PORT=5702
-VERTX_MODULE="pulse"
+VERTX_MODULE="controller"
 
 exec "$JAVACMD" \
     "${JVM_OPTS[@]}" \
-    -Djava.util.logging.config.file=${VERTX_JUL_CONFIG:-${VERTX_HOME}/conf/logging.properties} \
+    -Djava.util.logging.config.file=${VERTX_HOME}/conf/logging.properties \
     -Dvertx.home=$VERTX_HOME\
     -classpath "$CLASSPATH" \
     io.magnetic.vamp.Bootstrap run -public_address ${LOCAL_PUBLIC_ADDRESS} \
