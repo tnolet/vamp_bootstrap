@@ -23,11 +23,13 @@ import com.hazelcast.config.*;
 import org.vertx.java.platform.impl.Args;
 import org.vertx.java.spi.cluster.impl.hazelcast.*;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.commons.io.*;
 
 public class Bootstrap {
 
@@ -76,7 +78,7 @@ public class Bootstrap {
         int hazelcastPort = Integer.parseInt(args.map.get("-cluster_port"));
 
         // Vertx properties
-        String vertxVerticle = args.map.get("-verticle"); //name of file
+        String vertxModule = args.map.get("-vertx_module"); //name of vertx module to deploy
         String vertxClassPath = args.map.get("-classpath"); //directory
 
         String vertxPublicHost = args.map.get("-public_address");
@@ -111,16 +113,27 @@ public class Bootstrap {
 //        Set up the configuration object
         JsonObject conf = new JsonObject();
 
-//        Set the initializing verticle. This is the verticle that will spin up all other verticles
-        URL classpath_location = null;
+//        Pull down a module
+        String vertxModuleFileName = new String("vamp-" + vertxModule +"-0.1.0.zip");
+        URL moduleURL = null;
+
         try {
-            classpath_location = new URL("file:///" + vertxClassPath);
+            moduleURL = new URL("https://s3-eu-west-1.amazonaws.com/deploy.magnetic.io/modules/" + vertxModuleFileName);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        URL[] classpath = new URL[]{classpath_location};
 
-        pm.deployVerticle(vertxVerticle, conf, classpath, 1, null, new AsyncResultHandler<String>() {
+        File moduleFile = new File(vertxModuleFileName);
+
+        try {
+            FileUtils.copyURLToFile(moduleURL, moduleFile, 2000, 30000);
+
+        } catch (IOException e) {
+            log.error("Couldn't download the module");
+            e.printStackTrace();
+        }
+
+        pm.deployModuleFromZip(vertxModuleFileName, conf,1,new AsyncResultHandler<String>() {
             public void handle(AsyncResult<String> asyncResult) {
                 if (asyncResult.succeeded()) {
                     System.out.println("Deployment ID is " + asyncResult.result());
@@ -169,10 +182,8 @@ public class Bootstrap {
                         "                                                                               \n" +
                         "        -event_bus_port        specifies the port for the event bus            \n" +
                         "                                                                               \n" +
-                        "        -verticle              specifies the verticle to run                   \n" +
-                        "                                                                               \n" +
-                        "        -classpath             specifies the classpath                         \n" +
-                        "                                                                               \n" +
+                        "        -vertx_module          specifies the vertx module to run. This will    \n" +
+                        "                               typically be a module that deploys other modules\n" +
                         "                                                                               \n";
 
         log.info(usage);
