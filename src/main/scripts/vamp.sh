@@ -6,7 +6,7 @@
 ##  tested on Centos 6.4
 ##
 ##############################################################################
-set -x
+
 # Add default JVM options here. You can also use JAVA_OPTS to pass JVM options to this script.
 
 # If you're deploying and undeploying a lot of verticles with dynamic languages it's recommended to enable GC'ing
@@ -193,15 +193,14 @@ eval splitJvmOpts $JVM_OPTS $JAVA_OPTS $JMX_OPTS $VERTX_OPTS
 
 # Try to determine all the ip addresses and ports to pass in
 
-LOCAL_PUBLIC_ADDRESS=$PUBLIC_ADDRESS
 REMOTE_HOST_ADDRESS=`curl -L http://$DOCKER0_ADDRESS:4001/v2/keys/hosts | \
                         sed -e 's/[{}]/''/g' | \
                         awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | \
                         grep value | \
-                        grep -v $LOCAL_PUBLIC_ADDRESS | \
+                        grep -v $PUBLIC_ADDRESS | \
                         cut -d':' -f2 | \
                         sed 's/"//g' | \
-                        head -n 1`
+                        head -n 1 >/dev/null 2>&1`
 
 LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
@@ -213,10 +212,10 @@ exec "$JAVACMD" \
     -Djava.util.logging.config.file=${VERTX_HOME}/conf/logging.properties \
     -Dvertx.home=$VERTX_HOME\
     -classpath "$CLASSPATH" \
-    io.magnetic.vamp.Bootstrap run -public_address ${LOCAL_PUBLIC_ADDRESS} \
+    io.magnetic.vamp.Bootstrap run -public_address $PUBLIC_ADDRESS \
                                    -remote_address ${REMOTE_HOST_ADDRESS} \
                                    -local_address ${LOCAL_ADDRESS} \
                                    -cluster_port ${CLUSTER_PORT} \
                                    -event_bus_port ${EVENT_BUS_PORT} \
                                    -vertx_module ${VERTX_MODULE} \
-                                    "$@"
+                                    "$@" > /dev/null 2>&1 &

@@ -106,7 +106,10 @@ public class Bootstrap {
 
         Join join = network.getJoin();
         join.getMulticastConfig().setEnabled(false);
-        join.getTcpIpConfig().addMember(hazelcastRemoteAddress).setEnabled(true);
+
+//        Add the remote host, but also the local hazelcast host, so multiple Vert.X instances running on the same
+//        host are able to connect
+        join.getTcpIpConfig().addMember(hazelcastRemoteAddress).addMember(hazelcastPublicAddress).setEnabled(true);
 
         PlatformManager pm = PlatformLocator.factory.createPlatformManager(vertxClusterPort, vertxClusterHost);
 
