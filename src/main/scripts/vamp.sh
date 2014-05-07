@@ -7,8 +7,13 @@
 ##
 ##############################################################################
 
-# Add default JVM options here. You can also use JAVA_OPTS to pass JVM options to this script.
+# set font types
 
+bold="\e[1m"
+normal="\e[0m"
+
+
+# Add default JVM options here. You can also use JAVA_OPTS to pass JVM options to this script.
 # If you're deploying and undeploying a lot of verticles with dynamic languages it's recommended to enable GC'ing
 # of generated classes and prevent OOM due to a lot of gc
 # JVM_OPTS="-XX:+CMSClassUnloadingEnabled -XX:-UseGCOverheadLimit"
@@ -202,11 +207,17 @@ REMOTE_HOST_ADDRESS=`curl -sL http://$DOCKER0_ADDRESS:4001/v2/keys/vamp/bootstra
                         sed 's/"//g' | \
                         head -n 1`
 
-
 LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
 EVENT_BUS_PORT=5702
 VERTX_MODULE="pulse"
+
+if [[ ! -z $REMOTE_HOST_ADDRESS ]]; then
+    echo -e  "${normal}==> info: Vamp Bootstrap will try to cluster with started remote host ${REMOTE_HOST_ADDRESS}"
+    else
+    echo -e  "${normal}==> info: Found no remote hosts: Vamp Bootstrap will start unclustered"
+fi
+
 
 exec "$JAVACMD" \
     "${JVM_OPTS[@]}" \
