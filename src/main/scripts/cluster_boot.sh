@@ -18,10 +18,13 @@ set -eo pipefail
 
 # set font types
 
-bold=`tput bold`
-normal=`tput sgr0`
+bold="\e[1m"
+normal="\e[0m"
 
-echo "${bold}==> Starting cluster bootstrap..."
+# set directory in which the script is
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo -e  "${bold}==> Starting cluster bootstrap..."
 
 # set debug based on envvar
 [[ $DEBUG ]] && set -x
@@ -48,17 +51,17 @@ export ETCD_PATH=${ETCD_PATH:-/vamp/bootstrap}
 export ETCD_TTL=${ETCD_TTL:-10}
 
 
-echo "${bold}==> info: Connecting to ETCD"
+echo -e  "${bold}==> info: Connecting to ETCD"
 
 MAX_RETRIES=10
 retry=0
 
 # wait for etcd to be available
 until curl -L http://$ETCD/v2/keys/ > /dev/null 2>&1; do
-	echo "${normal}==> info: Waiting for etcd at $ETCD..."
+	echo -e  "${normal}==> info: Waiting for etcd at $ETCD..."
 	sleep $(($ETCD_TTL/2))  # sleep for half the TTL
 	if [[ "$retry" -gt $MAX_RETRIES ]]; then
-	echo "==> error: Exceed maximum of ${MAX_RETRIES}...exiting"
+	echo -e  "==> error: Exceed maximum of ${MAX_RETRIES}...exiting"
 	exit 1
 	fi
 done
@@ -66,12 +69,12 @@ done
 # wait until etcd has discarded potentially stale values
 sleep $(($ETCD_TTL+1))
 
-echo "${normal}==> info: Connected to ETCD at $ETCD"
+echo -e  "${normal}==> info: Connected to ETCD at $ETCD"
 
-echo "${bold}==> info: Starting Vamp Boostrap"
+echo -e  "${bold}==> info: Starting Vamp Boostrap"
 
 # spawn vamp bootstrapper in the background
-./vamp.sh &
+$SCRIPT_DIR/vamp.sh &
 VAMP_PID=$!
 
 # smart shutdown on SIGINT and SIGTERM
@@ -91,11 +94,11 @@ if [[ ! -z $PORT_HC ]]; then
 
 	# wait for the service to become available on PUBLISH port
 	sleep 1 && while [[ -z $(netstat -lnt | awk "\$6 == \"LISTEN\" && \$4 ~ \".$PUBLISH\" && \$1 ~ \"$PROTO.?\"") ]] ; do
-	echo "${normal}==> info: Waiting for Vamp Bootstrap to come online..."
+	echo -e  "${normal}==> info: Waiting for Vamp Bootstrap to come online..."
 	sleep 3;
 	done
 
-	echo "${normal}==> info: Vamp Bootstrap was started with PID ${VAMP_PID} and public IP ${PUBLIC_ADDRESS}"
+	echo -e  "${normal}==> info: Vamp Bootstrap was started with PID ${VAMP_PID} and public IP ${PUBLIC_ADDRESS}"
 
 	# while the port is listening, publish to etcd
 	while [[ ! -z $(netstat -lnt | awk "\$6 == \"LISTEN\" && \$4 ~ \".$PUBLISH\" && \$1 ~ \"$PROTO.?\"") ]] ; do
