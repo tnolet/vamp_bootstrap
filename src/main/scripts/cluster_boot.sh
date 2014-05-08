@@ -7,6 +7,7 @@
 ##  -   it sets initial configuration
 ##  -   it sets initial keys in ETCD
 ##  -   it announces the service in ETCD
+##  -   it passes the verticle to startup to vamp
 ##
 ##  This script is based on the great work by deis:
 ##  https://github.com/deis/

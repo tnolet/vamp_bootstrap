@@ -117,13 +117,14 @@ public class Bootstrap {
         JsonObject conf = new JsonObject();
 
 //        Pull down a module
-        String vertxModuleFileName = new String("vamp-" + vertxModule +"-0.1.0.zip");
+        String vertxModuleFileName = new String(vertxModule +".zip");
         URL moduleURL = null;
 
         try {
             moduleURL = new URL("https://s3-eu-west-1.amazonaws.com/deploy.magnetic.io/modules/" + vertxModuleFileName);
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            log.fatal("Could not find a Vertx module with name" + vertxModuleFileName);
         }
 
         File moduleFile = new File(vertxModuleFileName);
