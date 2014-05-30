@@ -7,7 +7,19 @@
 ##  -   it sets initial configuration
 ##  -   it sets initial keys in ETCD
 ##  -   it announces the service in ETCD
-##  -   it passes the verticle to startup to vamp
+##  -   it passes the vertx module to the Vamp Bootstrap process
+##
+##  clusterboot.sh relies on the following environment variables:
+##
+##  $DOCKER0_ADDRESS        - the IP of the Docker bridge
+##  $PUBLIC_ADDRESS         - the external IP of the host running Docker
+##  $PHYSICAL_HOSTNAME      - the hostname of the host running Docker
+##
+##
+##  For example, when you want to start vamp-pulse-0.1.0.zip:
+##
+##  $ ./cluster_boot.sh vamp-pulse-0.1.0
+##
 ##
 ##  This script is based on the great work by deis:
 ##  https://github.com/deis/
@@ -34,6 +46,10 @@ echo -e  "${bold}==> Starting cluster bootstrap..."
 export ETCD_HOST=$DOCKER0_ADDRESS
 
 # The public IP address of the parent host. This has to be passed in at startup of the container
+export PUBLIC_IP=$PUBLIC_ADDRESS
+
+# The hostname of the physical host/vm that is running Docker
+export PHYSICAL_HOSTNAME=$PHYSICAL_HOSTNAME
 
 # The randomized hostname of the current Docker container.
 export CONTAINER_HOSTNAME=$HOSTNAME
@@ -44,6 +60,8 @@ export PORT_HC=${PORT_HC:-5701}
 # The public port used to establish the Vert.X event bus
 export PORT_EB=${PORT_EB:-5702}
 
+# Vertx Module to pass to Vamp Bootstrap
+export VERTX_MODULE=$1
 
 # configure etcd
 export ETCD_PORT=${ETCD_PORT:-4001}
@@ -72,10 +90,10 @@ sleep $(($ETCD_TTL+1))
 
 echo -e  "${normal}==> info: Connected to ETCD at $ETCD"
 
-echo -e  "${bold}==> info: Starting Vamp Boostrap"
+echo -e  "${bold}==> info: Starting Vamp Bootstrap with module ${VERTX_MODULE}"
 
 # spawn vamp bootstrapper in the background
-$SCRIPT_DIR/vamp.sh &
+$SCRIPT_DIR/vamp.sh $VERTX_MODULE &
 VAMP_PID=$!
 
 # smart shutdown on SIGINT and SIGTERM

@@ -1,16 +1,18 @@
-/*
-   Bootstrap configures Hazelcast for clustering in Docker
-   It performs two tasks:
+/**
+*   Vamp Bootstrap configures Hazelcast for on-the-fly clustering in Docker
+*   It performs two tasks:
+*
+*   1) Setup Hazelcast for routing between Docker instances on different hosts
+*   2) Setup the Vertx event bus for routing between verticles running in these Docker instances
+*
+*   This code is based almost entirely on the standard Vertx Starter class and the extra commit remarks regarding
+*   the programmatic configuration of the event bus, please see:
+*
+*   https://github.com/eclipse/vert.x/blob/master/vertx-platform/src/main/java/org/vertx/java/platform/impl/cli/Starter.java
+*   https://github.com/eclipse/vert.x/pull/777
+**/
 
-   1) Setup Hazelcast for routing between Docker instances on different hosts
-   2) Setup the Vertx event bus for routing between verticles running in these Docker instances
-
-   This code is based almost entirely on the standard Vertx Starter class and the extra commit remarks regarding
-   the programmatic configuration of the event bus, please see:
-
-   https://github.com/eclipse/vert.x/blob/master/vertx-platform/src/main/java/org/vertx/java/platform/impl/cli/Starter.java
-   https://github.com/eclipse/vert.x/pull/777
-*/
+//TODO: integrate bootstrap controlling verticle loaded from classpath
 
 package io.magnetic.vamp;
 
@@ -40,7 +42,7 @@ public class Bootstrap {
         new Bootstrap(args);
     }
 
-    private Bootstrap(String[] sargs) {
+    public Bootstrap(String[] sargs) {
 
         Args args = new Args(sargs);
         sargs = removeOptions(sargs);
@@ -62,7 +64,7 @@ public class Bootstrap {
                            runVertx(args);
                             break;
                         default:
-                            displaySyntax();
+                            log.info(displaySyntax());
                     }
                 }
             }
@@ -73,7 +75,6 @@ public class Bootstrap {
 
         // Hazelcast properties
         String hazelcastPublicAddress = args.map.get("-public_address");
-       // String hazelcastLocalAddress = args.map.get("-local_address");
         String hazelcastRemoteAddress = args.map.get("-remote_address");
         int hazelcastPort = Integer.parseInt(args.map.get("-cluster_port"));
 
@@ -89,7 +90,10 @@ public class Bootstrap {
         System.setProperty("vertx.cluster.public.host", vertxPublicHost);
         System.setProperty("vertx.cluster.public.port", Integer.toString(vertxPublicPort));
 
-//        Create new config objects for Hazelcast
+        // Physical host properties
+        String physicalHostName = args.map.get("-physical_hostname");
+
+//  Create new config objects for Hazelcast
         Config cfg = new Config();
         ProgrammableClusterManagerFactory.setConfig(cfg);
         System.setProperty("vertx.clusterManagerFactory", ProgrammableClusterManagerFactory.class.getName());
@@ -100,9 +104,9 @@ public class Bootstrap {
 
         network.setPublicAddress(hazelcastPublicAddress);
 
-//        Interfaces interfaces = new Interfaces();
-//        interfaces.addInterface("127.0.0.1");
-//        network.setInterfaces(interfaces);
+        Interfaces interfaces = new Interfaces();
+        interfaces.addInterface("127.0.0.1");
+        network.setInterfaces(interfaces);
 
         Join join = network.getJoin();
         join.getMulticastConfig().setEnabled(false);
@@ -159,7 +163,32 @@ public class Bootstrap {
         return munged.toArray(new String[munged.size()]);
     }
 
-    private static void displaySyntax() {
+    private static <T> AsyncResultHandler<T> createLoggingHandler(final String message, final Handler<AsyncResult<T>> doneHandler) {
+        return new AsyncResultHandler<T>() {
+            @Override
+            public void handle(AsyncResult<T> res) {
+                if (res.failed()) {
+                    Throwable cause = res.cause();
+                    if (cause instanceof VertxException) {
+                        VertxException ve = (VertxException)cause;
+                        log.error(ve.getMessage());
+                        if (ve.getCause() != null) {
+                            log.error(ve.getCause());
+                        }
+                    } else {
+                        log.error("Failed in " + message, cause);
+                    }
+                } else {
+                    log.info("Succeeded in " + message);
+                }
+                if (doneHandler != null) {
+                    doneHandler.handle(res);
+                }
+            }
+        };
+    }
+
+    public static String displaySyntax() {
 
         String usage =
                 "                                      \n"+
@@ -168,7 +197,7 @@ public class Bootstrap {
                 " | |/ / /_/ / / / / / / /_/ /         \n"+
                 " |___/\\__,_/_/ /_/ /_/ .___/         \n"+
                 "                    /_/               \n"+
-                " vamp run [-options]                                                                        \n" +
+                " vamp run [-options]                                                                   \n" +
                         "        run a bootstrapper that configures and connects up Hazelcast           \n" +
                         "        and the Vertx event bus for usage in Docker containers.                \n" +
                         "        required options are:                                                  \n" +
@@ -189,8 +218,10 @@ public class Bootstrap {
                         "        -vertx_module          specifies the vertx module to run. This will    \n" +
                         "                               typically be a module that deploys other modules\n" +
                         "                                                                               \n" +
+                        "        --physical_hostname    specifies the hostname of the vm or physical    \n" +
+                        "                               host running Docker.                            \n" +
+                        "                                                                               \n" +
                         "                                                                               \n";
-
-        log.info(usage);
+        return usage;
     }
 }

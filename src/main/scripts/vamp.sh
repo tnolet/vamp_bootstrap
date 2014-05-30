@@ -238,4 +238,5 @@ exec "$JAVACMD" \
                                    -cluster_port ${CLUSTER_PORT} \
                                    -event_bus_port ${EVENT_BUS_PORT} \
                                    -vertx_module ${VERTX_MODULE} \
-                                    "$@" > /dev/null 2>&1 &
+                                   -physical_hostname ${PHYSICAL_HOSTNAME} \
+                                    > /dev/null 2>&1 &
