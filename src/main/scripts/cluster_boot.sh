@@ -90,6 +90,26 @@ sleep $(($ETCD_TTL+1))
 
 echo -e  "${normal}==> info: Connected to ETCD at $ETCD"
 
+# Try to determine if there already is a host we can connect to with the Hazelcast/Eventbus
+
+REMOTE_HOST_ADDRESS=`curl -sL http://$ETCD:4001/v2/keys/vamp/bootstrap | \
+                        sed -e 's/[{}]/''/g' | \
+                        awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | \
+                        grep -E vamp/bootstrap/ | \
+                        grep -v $PUBLIC_ADDRESS | \
+                        cut -d'/' -f4 | \
+                        sed 's/"//g' | \
+                        head -n 1`
+
+
+
+if [[ ! -z $REMOTE_HOST_ADDRESS ]]; then
+    echo -e  "${normal}==> info: Vamp Bootstrap will try to cluster with started remote host ${REMOTE_HOST_ADDRESS}"
+    else
+    echo -e  "${normal}==> info: Found no remote hosts: Vamp Bootstrap will start unclustered"
+fi
+
+
 echo -e  "${bold}==> info: Starting Vamp Bootstrap with module ${VERTX_MODULE}"
 
 # spawn vamp bootstrapper in the background

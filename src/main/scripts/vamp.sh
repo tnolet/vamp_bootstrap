@@ -204,27 +204,10 @@ function splitJvmOpts() {
 }
 eval splitJvmOpts $JVM_OPTS $JAVA_OPTS $JMX_OPTS $VERTX_OPTS
 
-# Try to determine all the ip addresses and ports to pass in
-
-REMOTE_HOST_ADDRESS=`curl -sL http://$DOCKER0_ADDRESS:4001/v2/keys/vamp/bootstrap | \
-                        sed -e 's/[{}]/''/g' | \
-                        awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | \
-                        grep -E vamp/bootstrap/ | \
-                        grep -v $PUBLIC_ADDRESS | \
-                        cut -d'/' -f4 | \
-                        sed 's/"//g' | \
-                        head -n 1`
-
 LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
 EVENT_BUS_PORT=5702
 VERTX_MODULE=$1
-
-if [[ ! -z $REMOTE_HOST_ADDRESS ]]; then
-    echo -e  "${normal}==> info: Vamp Bootstrap will try to cluster with started remote host ${REMOTE_HOST_ADDRESS}"
-    else
-    echo -e  "${normal}==> info: Found no remote hosts: Vamp Bootstrap will start unclustered"
-fi
 
 
 exec "$JAVACMD" \

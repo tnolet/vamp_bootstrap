@@ -90,10 +90,7 @@ public class Bootstrap {
         System.setProperty("vertx.cluster.public.host", vertxPublicHost);
         System.setProperty("vertx.cluster.public.port", Integer.toString(vertxPublicPort));
 
-        // Physical host properties
-        String physicalHostName = args.map.get("-physical_hostname");
-
-//  Create new config objects for Hazelcast
+//        Create new config objects for Hazelcast
         Config cfg = new Config();
         ProgrammableClusterManagerFactory.setConfig(cfg);
         System.setProperty("vertx.clusterManagerFactory", ProgrammableClusterManagerFactory.class.getName());
@@ -197,7 +194,7 @@ public class Bootstrap {
                 " | |/ / /_/ / / / / / / /_/ /         \n"+
                 " |___/\\__,_/_/ /_/ /_/ .___/         \n"+
                 "                    /_/               \n"+
-                " vamp run [-options]                                                                   \n" +
+                " vamp run [-options]                                                                        \n" +
                         "        run a bootstrapper that configures and connects up Hazelcast           \n" +
                         "        and the Vertx event bus for usage in Docker containers.                \n" +
                         "        required options are:                                                  \n" +
@@ -217,9 +214,6 @@ public class Bootstrap {
                         "                                                                               \n" +
                         "        -vertx_module          specifies the vertx module to run. This will    \n" +
                         "                               typically be a module that deploys other modules\n" +
-                        "                                                                               \n" +
-                        "        --physical_hostname    specifies the hostname of the vm or physical    \n" +
-                        "                               host running Docker.                            \n" +
                         "                                                                               \n" +
                         "                                                                               \n";
         return usage;
