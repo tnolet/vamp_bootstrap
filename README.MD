@@ -1,1 +1,0 @@
-![codeship](https://www.codeship.io/projects/04933e60-b5de-0131-dffd-2207fc86a6b4/status)
