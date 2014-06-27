@@ -26,12 +26,9 @@
 ##
 ##############################################################################
 
-# fail hard and fast even on pipelines
-set -eo pipefail
-
 # set font types
 
-bold="\e[1m"
+bold="\e[1;36m"
 normal="\e[0m"
 
 # set directory in which the script is
@@ -69,20 +66,29 @@ export ETCD="$ETCD_HOST:$ETCD_PORT"
 export ETCD_PATH=${ETCD_PATH:-/vamp/bootstrap}
 export ETCD_TTL=${ETCD_TTL:-10}
 
-
+echo -e  "${normal}==> info: Hazelcast port \t=> $PORT_HC"
+echo -e  "${normal}==> info: Vertx Eventbus port \t=> $PORT_EB"
+echo -e  "${normal}==> info: ETCD host \t\t=> $ETCD_HOST"
+echo -e  "${normal}==> info: ETCD port \t\t=> $ETCD_PORT"
+echo -e  "${normal}==> info: ETCD base path \t=> $ETCD_PATH"
+echo -e  "${normal}==> info: Public IP \t\t=> $PUBLIC_IP"
+echo -e  "${normal}==> info: Physical hostname \t=> $PHYSICAL_HOSTNAME"
+echo -e  "${normal}==> info: Container hostname \t=> $CONTAINER_HOSTNAME"
+echo -e  "${normal}==> info: Vertx module to run \t=> $VERTX_MODULE"
 echo -e  "${bold}==> info: Connecting to ETCD"
 
-MAX_RETRIES=10
+MAX_RETRIES_CONNECT=10
 retry=0
 
 # wait for etcd to be available
 until curl -L http://$ETCD/v2/keys/ > /dev/null 2>&1; do
 	echo -e  "${normal}==> info: Waiting for etcd at $ETCD..."
 	sleep $(($ETCD_TTL/2))  # sleep for half the TTL
-	if [[ "$retry" -gt $MAX_RETRIES ]]; then
-	echo -e  "==> error: Exceed maximum of ${MAX_RETRIES}...exiting"
+	if [[ "$retry" -gt $MAX_RETRIES_CONNECT ]]; then
+	echo -e  "==> error: Exceed maximum of ${MAX_RETRIES_CONNECT}...exiting"
 	exit 1
 	fi
+	retry=retry+1
 done
 
 # wait until etcd has discarded potentially stale values
@@ -100,8 +106,6 @@ REMOTE_HOST_ADDRESS=`curl -sL http://$ETCD/v2/keys/vamp/bootstrap | \
                         cut -d'/' -f4 | \
                         sed 's/"//g' | \
                         head -n 1`
-
-
 
 if [[ ! -z $REMOTE_HOST_ADDRESS ]]; then
     echo -e  "${normal}==> info: Vamp Bootstrap will try to cluster with started remote host ${REMOTE_HOST_ADDRESS}"
