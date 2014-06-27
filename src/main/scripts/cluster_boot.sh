@@ -92,7 +92,7 @@ echo -e  "${normal}==> info: Connected to ETCD at $ETCD"
 
 # Try to determine if there already is a host we can connect to with the Hazelcast/Eventbus
 
-REMOTE_HOST_ADDRESS=`curl -sL http://$ETCD:4001/v2/keys/vamp/bootstrap | \
+REMOTE_HOST_ADDRESS=`curl -sL http://$ETCD/v2/keys/vamp/bootstrap | \
                         sed -e 's/[{}]/''/g' | \
                         awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | \
                         grep -E vamp/bootstrap/ | \
