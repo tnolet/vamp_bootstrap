@@ -212,7 +212,7 @@ VERTX_MODULE=$1
 
 exec "$JAVACMD" \
     "${JVM_OPTS[@]}" \
-    -Djava.util.logging.config.file=${VERTX_HOME}/conf/logging.properties \
+    -Djava.util.logging.config.file=${VAMP_HOME}/conf/logging.properties \
     -Dvertx.home=$VERTX_HOME\
     -classpath "$CLASSPATH" \
     io.magnetic.vamp.Bootstrap run -public_address $PUBLIC_ADDRESS \

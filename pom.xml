@@ -5,7 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.magnetic.vamp</groupId>
     <artifactId>vamp-bootstrap</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
+    <properties>
+        <vertx.version>2.1.1</vertx.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -71,17 +75,17 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-platform</artifactId>
-            <version>2.1RC3</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>2.1RC3</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-hazelcast</artifactId>
-            <version>2.1RC3</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

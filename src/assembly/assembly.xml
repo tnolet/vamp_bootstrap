@@ -1,5 +1,5 @@
 <assembly>
-    <id>1.0</id>
+    <id>1.1</id>
     <formats>
         <format>tar.gz</format>
     </formats>
@@ -24,6 +24,14 @@
                 <include>*.sh</include>
             </includes>
             <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/conf</directory>
+            <outputDirectory>${project.build.finalName}/conf</outputDirectory>
+            <includes>
+                <include>*.properties</include>
+            </includes>
+            <fileMode>0655</fileMode>
         </fileSet>
     </fileSets>
 </assembly>

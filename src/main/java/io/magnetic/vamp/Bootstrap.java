@@ -101,16 +101,21 @@ public class Bootstrap {
 
         network.setPublicAddress(hazelcastPublicAddress);
 
-        Interfaces interfaces = new Interfaces();
+        InterfacesConfig interfaces = new InterfacesConfig();
         interfaces.addInterface("127.0.0.1");
         network.setInterfaces(interfaces);
 
-        Join join = network.getJoin();
+        JoinConfig join = network.getJoin();
         join.getMulticastConfig().setEnabled(false);
 
-//        Add the remote host, but also the local hazelcast host, so multiple Vert.X instances running on the same
-//        host are able to connect
-        join.getTcpIpConfig().addMember(hazelcastRemoteAddress).addMember(hazelcastPublicAddress).setEnabled(true);
+//        Add the remote host if one is detected, but also the local hazelcast host, so multiple Vert.X instances
+//        running on the same host are able to connect
+
+
+        if (hazelcastRemoteAddress != null && !hazelcastRemoteAddress.isEmpty()) {
+            join.getTcpIpConfig().addMember(hazelcastRemoteAddress);
+        }
+        join.getTcpIpConfig().addMember(hazelcastPublicAddress).setEnabled(true);
 
         PlatformManager pm = PlatformLocator.factory.createPlatformManager(vertxClusterPort, vertxClusterHost);
 
