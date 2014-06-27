@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ##############################################################################
 ##
 ##  This script runs inside a Docker instance and does the following
@@ -30,6 +29,26 @@
 
 bold="\e[1;36m"
 normal="\e[0m"
+
+# Print the cocky banner
+# Font by http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=vamp%0A
+
+red="\e[0;31m"
+yellow="\e[0;33m"
+green="\e[0;32m"
+blue="\e[0;34m"
+purple="\e[0;35 m"
+normal="\e[0m"
+echo -e ""
+echo -e "${red}██╗   ██╗ █████╗ ███╗   ███╗██████╗  "
+echo -e "${yellow}██║   ██║██╔══██╗████╗ ████║██╔══██╗ "
+echo -e "${green}██║   ██║███████║██╔████╔██║██████╔╝ "
+echo -e "${blue}╚██╗ ██╔╝██╔══██║██║╚██╔╝██║██╔═══╝  "
+echo -e "${purple} ╚████╔╝ ██║  ██║██║ ╚═╝ ██║██║      "
+echo -e "${red}  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝      "
+echo -e "${normal}                       by magnetic.io"
+echo -e ""
+
 
 # set directory in which the script is
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
