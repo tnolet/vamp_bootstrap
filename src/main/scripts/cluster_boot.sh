@@ -25,6 +25,10 @@
 ##
 ##############################################################################
 
+# version
+
+version=1.1
+
 # set font types
 
 bold="\e[1;36m"
@@ -46,6 +50,7 @@ echo -e "${green}██║   ██║███████║██╔███
 echo -e "${blue}╚██╗ ██╔╝██╔══██║██║╚██╔╝██║██╔═══╝  "
 echo -e "${purple} ╚████╔╝ ██║  ██║██║ ╚═╝ ██║██║      "
 echo -e "${red}  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝      "
+echo -e "${normal}                       version ${version}"
 echo -e "${normal}                       by magnetic.io"
 echo -e ""
 
@@ -107,7 +112,7 @@ until curl -L http://$ETCD/v2/keys/ > /dev/null 2>&1; do
 	echo -e  "==> error: Exceed maximum of ${MAX_RETRIES_CONNECT}...exiting"
 	exit 1
 	fi
-	retry=retry+1
+	((retry++))
 done
 
 # wait until etcd has discarded potentially stale values
@@ -132,6 +137,7 @@ if [[ ! -z $REMOTE_HOST_ADDRESS ]]; then
     echo -e  "${normal}==> info: Found no remote hosts: Vamp Bootstrap will start unclustered"
 fi
 
+export REMOTE_HOST_ADDRESS=$REMOTE_HOST_ADDRESS
 
 echo -e  "${bold}==> info: Starting Vamp Bootstrap with module ${VERTX_MODULE}"
 
