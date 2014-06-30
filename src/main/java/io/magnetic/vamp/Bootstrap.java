@@ -100,11 +100,6 @@ public class Bootstrap {
         network.setPortAutoIncrement(false);
 
         network.setPublicAddress(hazelcastPublicAddress);
-
-        InterfacesConfig interfaces = new InterfacesConfig();
-        interfaces.addInterface("127.0.0.1");
-        network.setInterfaces(interfaces);
-
         JoinConfig join = network.getJoin();
         join.getMulticastConfig().setEnabled(false);
 
