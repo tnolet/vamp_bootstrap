@@ -90,15 +90,6 @@ export ETCD="$ETCD_HOST:$ETCD_PORT"
 export ETCD_PATH=${ETCD_PATH:-/vamp/bootstrap}
 export ETCD_TTL=${ETCD_TTL:-10}
 
-echo -e  "${normal}==> info: Hazelcast port \t=> $PORT_HC"
-echo -e  "${normal}==> info: Vertx Eventbus port \t=> $PORT_EB"
-echo -e  "${normal}==> info: ETCD host \t\t=> $ETCD_HOST"
-echo -e  "${normal}==> info: ETCD port \t\t=> $ETCD_PORT"
-echo -e  "${normal}==> info: ETCD base path \t=> $ETCD_PATH"
-echo -e  "${normal}==> info: Public IP \t\t=> $PUBLIC_IP"
-echo -e  "${normal}==> info: Physical hostname \t=> $PHYSICAL_HOSTNAME"
-echo -e  "${normal}==> info: Container hostname \t=> $CONTAINER_HOSTNAME"
-echo -e  "${normal}==> info: Vertx module to run \t=> $VERTX_MODULE"
 echo -e  "${bold}==> info: Connecting to ETCD"
 
 MAX_RETRIES_CONNECT=10
@@ -121,7 +112,6 @@ sleep $(($ETCD_TTL+1))
 echo -e  "${normal}==> info: Connected to ETCD at $ETCD"
 
 # Try to determine if there already is a host we can connect to with the Hazelcast/Eventbus
-
 REMOTE_HOST_ADDRESS=`curl -sL http://$ETCD/v2/keys/vamp/bootstrap | \
                         sed -e 's/[{}]/''/g' | \
                         awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | \
@@ -138,6 +128,29 @@ if [[ ! -z $REMOTE_HOST_ADDRESS ]]; then
 fi
 
 export REMOTE_HOST_ADDRESS=$REMOTE_HOST_ADDRESS
+
+# Get the local address when running a Docker container in 'bridged' mode
+LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
+
+# When running in 'host' mode on Vagrant, the network devices is not eth0 but enp0s3
+if [[ -z $LOCAL_ADDRESS ]]; then
+ echo -e  "${bold}==> info: Couldn't determine local address on eth0, trying enp0s3"
+ LOCAL_ADDRESS=`ifconfig enp0s3 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
+fi
+
+export LOCAL_ADDRESS=$LOCAL_ADDRESS
+
+echo -e  "${normal}==> info: Hazelcast port \t=> $PORT_HC"
+echo -e  "${normal}==> info: Vertx Eventbus port \t=> $PORT_EB"
+echo -e  "${normal}==> info: ETCD host \t\t=> $ETCD_HOST"
+echo -e  "${normal}==> info: ETCD port \t\t=> $ETCD_PORT"
+echo -e  "${normal}==> info: ETCD base path \t=> $ETCD_PATH"
+echo -e  "${normal}==> info: Public IP \t\t=> $PUBLIC_IP"
+echo -e  "${normal}==> info: Local IP \t\t=> $LOCAL_ADDRESS"
+echo -e  "${normal}==> info: Physical hostname \t=> $PHYSICAL_HOSTNAME"
+echo -e  "${normal}==> info: Container hostname \t=> $CONTAINER_HOSTNAME"
+echo -e  "${normal}==> info: Vertx module to run \t=> $VERTX_MODULE"
+
 
 echo -e  "${bold}==> info: Starting Vamp Bootstrap with module ${VERTX_MODULE}"
 
@@ -161,7 +174,7 @@ if [[ ! -z $PORT_HC ]]; then
 	set +e
 
 	# wait for the service to become available on PUBLISH port
-	sleep 1 && while [[ -z $(netstat -lnt | awk "\$6 == \"LISTEN\" && \$4 ~ \".$PUBLISH\" && \$1 ~ \"$PROTO.?\"") ]] ; do
+        sleep 1 && while [[ -z $(netstat -lnt | awk "\$6 == \"LISTEN\" && \$4 ~ \".$PUBLISH\" && \$1 ~ \"$PROTO.?\"") ]] ; do
 	echo -e  "${normal}==> info: Waiting for Vamp Bootstrap to come online..."
 	sleep 3;
 	done

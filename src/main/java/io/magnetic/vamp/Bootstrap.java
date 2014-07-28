@@ -97,15 +97,14 @@ public class Bootstrap {
 
         NetworkConfig network = cfg.getNetworkConfig();
         network.setPort(hazelcastPort);
-        network.setPortAutoIncrement(false);
+        network.setPortAutoIncrement(true);
 
         network.setPublicAddress(hazelcastPublicAddress);
         JoinConfig join = network.getJoin();
         join.getMulticastConfig().setEnabled(false);
+        join.getTcpIpConfig().setConnectionTimeoutSeconds(15);
 
-//        Add the remote host if one is detected, but also the local hazelcast host, so multiple Vert.X instances
-//        running on the same host are able to connect
-
+//        Add the remote host if one is detected
 
         if (hazelcastRemoteAddress != null && !hazelcastRemoteAddress.isEmpty()) {
             join.getTcpIpConfig().addMember(hazelcastRemoteAddress);

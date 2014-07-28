@@ -204,7 +204,6 @@ function splitJvmOpts() {
 }
 eval splitJvmOpts $JVM_OPTS $JAVA_OPTS $JMX_OPTS $VERTX_OPTS
 
-LOCAL_ADDRESS=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 CLUSTER_PORT=5701
 EVENT_BUS_PORT=5702
 VERTX_MODULE=$1
